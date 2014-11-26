@@ -1,4 +1,65 @@
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>@Spirotot | Aaron Fields</title><description>@Spirotot | Aaron Fields</description><link>http://blog.spirotot.com/</link><generator>Ghost 0.5</generator><lastBuildDate>Fri, 21 Nov 2014 14:10:59 GMT</lastBuildDate><atom:link href="http://blog.spirotot.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Cycling Is Awesome</title><description>&lt;p&gt;&lt;img src="http://blog.spirotot.com/content/images/2014/11/IMG_20141120_191542239-1.jpg" alt="2015 Motobecane Fantom Cross Outlaw"&gt;&lt;/p&gt;
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>@Spirotot | Aaron Fields</title><description>@Spirotot | Aaron Fields</description><link>http://blog.spirotot.com/</link><generator>Ghost 0.5</generator><lastBuildDate>Wed, 26 Nov 2014 22:34:28 GMT</lastBuildDate><atom:link href="http://blog.spirotot.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Beating the cloud with your command prompt.</title><description>&lt;p&gt;I've been spending more and more time working in, on, and around UNIX-based operating systems over the past two years or so, and, though I'm &lt;em&gt;still&lt;/em&gt; quite a noob, I've have been working on making myself faster and better at using shells on Linux. I've recently adopted &lt;a href="http://www.zsh.org/"&gt;Zsh&lt;/a&gt; as my go-to shell for my personal/development machines.&lt;/p&gt;
+
+&lt;p&gt;If you've not yet tried Zsh, I'd highly recommend checking it out. &lt;a href="http://fendrich.se/blog/2012/09/28/no/"&gt;People rave about it&lt;/a&gt;, and there's a wonderful tool called &lt;a href="https://github.com/robbyrussell/oh-my-zsh"&gt;oh-my-zsh&lt;/a&gt; that makes installing/maintaining it a breeze.&lt;/p&gt;
+
+&lt;p&gt;Anyway, it's obvious that software developers use the shell for developer-y things. But what about 'normal people things'? I want to share an example of how even a rudimentary familiarity with some basic Linux command-line utilities can make some tasks much easier and faster.&lt;/p&gt;
+
+&lt;p&gt;Our wedding videographer (my brother-in-law) uploaded all 40GB of our wedding ceremony videos up on... &lt;a href="https://onedrive.live.com/"&gt;Microsoft OneDrive&lt;/a&gt;. &lt;em&gt;&lt;strong&gt;Blech&lt;/strong&gt;&lt;/em&gt;. &lt;/p&gt;
+
+&lt;p&gt;&lt;img src="http://blog.spirotot.com/content/images/2014/11/Selection_002.png" alt="OneDrive File Listing"&gt;&lt;/p&gt;
+
+&lt;p&gt;There are nearly 300 video files in there... Fortunately, OneDrive does let you check multiple files to be compressed into a zip for download.&lt;/p&gt;
+
+&lt;p&gt;So, one might tick the checkboxes for all the files on the page, expecting that all of the files will be downloaded at once. They will be very disappointed to find, after having waiting for minutes to hours (depending on the speed of your Internet connection) that OneDrive will cut off the size of the zip file at 4GB. One might be rather annoyed. That one might be me.&lt;/p&gt;
+
+&lt;p&gt;So, I downloaded the files in chunks of 25 or so movies at a time. Painful, but not as painful as 1 at a time... especially since OneDrive will only let you have 4 HTTP download streams running simultaneously. The fun never ends with with the cloud.&lt;/p&gt;
+
+&lt;p&gt;Of course, once all the zips are finally done downloading, and I've extracted all the videos... I notice that at least one of the zip files had been larger than 4GB, which means that I didn't get all the videos for that batch. &lt;em&gt;&lt;strong&gt;Ungh...&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;At that point I had two basic options. I could manually check/verify the ~265 files I had gotten with the ones shown in OneDrive in my browser to see which ones I was missing. The sequence numbers in the filenames are non-contiguous (even in OneDrive), making this option extra not-fun and error-prone. I don't know how long this would take, but it seemed like it'd take way too long.&lt;/p&gt;
+
+&lt;p&gt;Alternatively, I could try to use the tools I have at-hand to automatically solve this problem in a matter of minutes. Of course, that is what I did. Here's how. This should work in Bash or Zsh, by the way!&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;I need to know what files I &lt;em&gt;should&lt;/em&gt; have. I want them saved in a file called &lt;code&gt;mvi_list&lt;/code&gt;.  &lt;/p&gt;
+
+&lt;ol&gt;&lt;li&gt;OneDrive knows that. I used &lt;a href="https://www.google.com/chrome/"&gt;Google Chrome&lt;/a&gt; to save the OneDrive page's contents (Options -&gt; Save Page As). It's useful to note that the mobile OneDrive page is less AJAX-y, and will probably give you a more reliable result. Use a &lt;a href="https://chrome.google.com/webstore/detail/user-agent-switcher-for-c/djflhoibgkdhkhhcedjiklpkjnoahfmg?hl=en-US"&gt;User-Agent switcher&lt;/a&gt; to load the mobile site in your desktop browser.&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;We know that all the video names start with "MVI_". We can extract the video names from the HTML file using that string, plus some dirty hacks:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cat [htmlfile] | tr " " "\n" | grep "MVI_" | grep "alt" | sort | uniq | tr -d "alt=\"" &amp;gt; mvi_list.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you don't know what the vertical bars (pipes) are, read about them here &lt;a href="http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-4.html"&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;ul&gt;&lt;li&gt;&lt;code&gt;cat [htmlfile] |&lt;/code&gt; reads the contents of your HTML file.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tr " " "\n" |&lt;/code&gt; replaces whitespace with a newline character.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;grep "MVI_" |&lt;/code&gt; filters out any lines that have the filenames that we're interested in.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;grep "alt" |&lt;/code&gt; filters out any lines that have the HTML &lt;code&gt;alt&lt;/code&gt; attribute, as it so happens that these lines contain our filenames.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sort |&lt;/code&gt; sorts the lines alphabetically.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;uniq |&lt;/code&gt; deduplicates the lines.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tr -d "alt=\"" &amp;gt; mvi_list&lt;/code&gt; removes the characters contained in the quotes from each line, and save the final result in a file called &lt;code&gt;mvi_list&lt;/code&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;I need the list of the video files that I &lt;em&gt;do&lt;/em&gt; have. I want it saved in a file called &lt;code&gt;haves&lt;/code&gt;. I have all the video files saved in a folder called &lt;code&gt;extracted&lt;/code&gt;. They're named &lt;code&gt;MVI_[sequenceNumber].MOV&lt;/code&gt;. The filenames in &lt;code&gt;mvi_list&lt;/code&gt; do not have the .MOV extension. So, I'll use the following command to get a list of the files I have in the same format as &lt;code&gt;mvi_list&lt;/code&gt;: &lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ls extracted | awk -F"." '{print $1}' &amp;gt; haves
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here's the breakdown:&lt;/p&gt;
+
+&lt;ul&gt;&lt;li&gt;&lt;code&gt;ls extracted |&lt;/code&gt; gives me a simple list of all the files I have.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;awk -F"." '{print $1}' &amp;gt; haves&lt;/code&gt; splits up each line at the period, and prints the first (&lt;code&gt;$1&lt;/code&gt;) chunk of the split, which is the filename in this case. This gets saved into a file called &lt;code&gt;haves&lt;/code&gt;.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Now I can check to see what the difference between OneDrive and my local filesystem is, using &lt;code&gt;diff mvi_list haves&lt;/code&gt;, which will compare the two files passed to it, displaying any differences. This produces the following output:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;37,40d36
+&amp;lt; MVI_6898
+&amp;lt; MVI_6899
+&amp;lt; MVI_6900
+&amp;lt; MVI_6901
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That means that &lt;code&gt;mvi_list&lt;/code&gt; has 4 items that &lt;code&gt;haves&lt;/code&gt; does not. Those are the videos I'm missing! I'm sure there are more elegant solutions, but as it is, this took all of 2 minutes; the missing movies are downloaded, and my problem is solved without any tedious manual comparisons.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Google will usually provide answers for any questions you have about using Bash/Zsh to solve otherwise tedious problems (i.e. "How do I rename all the files in a folder?"). I'd also recommend checking out &lt;a href="https://twitter.com/climagic"&gt;Command Line Magic&lt;/a&gt; for further inspiration.&lt;/p&gt;</description><link>http://blog.spirotot.com/2014/11/26/beating-the-cloud-with-your-command-prompt/</link><guid isPermaLink="false">dd9ef8e1-a4c4-4e23-ac86-797bfa776617</guid><dc:creator>Aaron Fields</dc:creator><pubDate>Wed, 26 Nov 2014 21:50:00 GMT</pubDate></item><item><title>Cycling Is Awesome</title><description>&lt;p&gt;&lt;img src="http://blog.spirotot.com/content/images/2014/11/IMG_20141120_191542239-1.jpg" alt="2015 Motobecane Fantom Cross Outlaw"&gt;&lt;/p&gt;
 
 &lt;p&gt;Today I put my 200th mile on my new bicycle.&lt;/p&gt;
 

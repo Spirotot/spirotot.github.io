@@ -57,6 +57,11 @@ sup { vertical-align: super; font-size: 0.85em; }
 sub { vertical-align: sub; font-size: 0.85em; }
 
 code {
+    background-color: #073642;
+    color: #93a1a1;
+    border: 1px solid #2d6472;
+    border-radius: 3px 3px 3px 3px;
+    padding: 1px 2px;
     font: 0.85em Monaco, Courier, Monospace;
 }
 

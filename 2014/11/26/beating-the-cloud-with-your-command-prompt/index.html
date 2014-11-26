@@ -1,0 +1,216 @@
+
+<head>
+
+  <meta charset="UTF-8">
+  <title>Beating the cloud with your command prompt.</title>
+  <meta name="viewport" content="width=device-width">
+
+  <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../../../assets/css/style.css?v=25e0caf895" rel="stylesheet">
+  <link href="../../../../assets/css/colors-dark.css?v=25e0caf895" rel="stylesheet">
+
+  <link rel="canonical" href="http://blog.spirotot.com/2014/11/26/beating-the-cloud-with-your-command-prompt/">
+    
+    <meta property="og:site_name" content="@Spirotot | Aaron Fields">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Beating the cloud with your command prompt.">
+    <meta property="og:description" content="I've been spending more and more time working in, on, and around UNIX-based operating systems over the past two years or so, and, though I'm still quite a noob, I've have been working on making myself faster and better at...">
+    <meta property="og:url" content="http://blog.spirotot.com/2014/11/26/beating-the-cloud-with-your-command-prompt/">
+    <meta property="article:published_time" content="2014-11-26T21:50:00.000Z">
+    <meta property="article:modified_time" content="2014-11-26T22:33:58.289Z">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Beating the cloud with your command prompt.">
+    <meta name="twitter:description" content="I've been spending more and more time working in, on, and around UNIX-based operating systems over the past two years or so, and, though I'm still quite a noob, I've have been working on making myself faster and better at...">
+    <meta name="twitter:url" content="http://blog.spirotot.com/2014/11/26/beating-the-cloud-with-your-command-prompt/">
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "@Spirotot | Aaron Fields",
+    "author": {
+        "@type": "Person",
+        "name": "Aaron Fields",
+        "url": "http://blog.spirotot.com/author/aaron",
+        "sameAs": null
+    },
+    "headline": "Beating the cloud with your command prompt.",
+    "url": "http://blog.spirotot.com/2014/11/26/beating-the-cloud-with-your-command-prompt/",
+    "datePublished": "2014-11-26T21:50:00.000Z",
+    "dateModified": "2014-11-26T22:33:58.289Z",
+    "description": "I&#x27;ve been spending more and more time working in, on, and around UNIX-based operating systems over the past two years or so, and, though I&#x27;m still quite a noob, I&#x27;ve have been working on making myself faster and better at..."
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.5">
+    <link rel="alternate" type="application/rss+xml" title="@Spirotot | Aaron Fields" href="../../../../rss/index.html">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-36144970-1', 'auto');
+  ga('require','displayfeatures');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+<body class="post-template">
+
+
+
+
+
+
+  <header id="header">
+      <h1><a href="http://blog.spirotot.com"> @Spirotot | Aaron Fields</a></h1>
+    <p></p>
+  </header>
+
+
+
+  <div id="page">
+
+
+
+    <div id="sidebar">
+
+      <nav>
+        <ul>
+          <li><a href="http://blog.spirotot.com">Home</a></li>
+          <li><a href="http://twitter.com/Spirotot">Twitter</a></li>
+          <li><a href="http://blog.spirotot.com/rss/">RSS Feed</a></li>
+        </ul>
+      </nav>
+
+        <div class="bio">
+          <img class="avatar" src="index.html">
+          <h3>Aaron Fields</h3>
+          <p></p>
+        </div>
+
+    </div>
+
+
+
+    <div id="content">
+      
+<article class="post">
+
+    <h1><a href="index.html">Beating the cloud with your command prompt.</a></h1>
+
+    <div class="post-content"><p>I've been spending more and more time working in, on, and around UNIX-based operating systems over the past two years or so, and, though I'm <em>still</em> quite a noob, I've have been working on making myself faster and better at using shells on Linux. I've recently adopted <a href="http://www.zsh.org/">Zsh</a> as my go-to shell for my personal/development machines.</p>
+
+<p>If you've not yet tried Zsh, I'd highly recommend checking it out. <a href="http://fendrich.se/blog/2012/09/28/no/">People rave about it</a>, and there's a wonderful tool called <a href="https://github.com/robbyrussell/oh-my-zsh">oh-my-zsh</a> that makes installing/maintaining it a breeze.</p>
+
+<p>Anyway, it's obvious that software developers use the shell for developer-y things. But what about 'normal people things'? I want to share an example of how even a rudimentary familiarity with some basic Linux command-line utilities can make some tasks much easier and faster.</p>
+
+<p>Our wedding videographer (my brother-in-law) uploaded all 40GB of our wedding ceremony videos up on... <a href="https://onedrive.live.com/">Microsoft OneDrive</a>. <em><strong>Blech</strong></em>. </p>
+
+<p><img src="../../../../content/images/2014/11/Selection_002.png" alt="OneDrive File Listing"></p>
+
+<p>There are nearly 300 video files in there... Fortunately, OneDrive does let you check multiple files to be compressed into a zip for download.</p>
+
+<p>So, one might tick the checkboxes for all the files on the page, expecting that all of the files will be downloaded at once. They will be very disappointed to find, after having waiting for minutes to hours (depending on the speed of your Internet connection) that OneDrive will cut off the size of the zip file at 4GB. One might be rather annoyed. That one might be me.</p>
+
+<p>So, I downloaded the files in chunks of 25 or so movies at a time. Painful, but not as painful as 1 at a time... especially since OneDrive will only let you have 4 HTTP download streams running simultaneously. The fun never ends with with the cloud.</p>
+
+<p>Of course, once all the zips are finally done downloading, and I've extracted all the videos... I notice that at least one of the zip files had been larger than 4GB, which means that I didn't get all the videos for that batch. <em><strong>Ungh...</strong></em></p>
+
+<p>At that point I had two basic options. I could manually check/verify the ~265 files I had gotten with the ones shown in OneDrive in my browser to see which ones I was missing. The sequence numbers in the filenames are non-contiguous (even in OneDrive), making this option extra not-fun and error-prone. I don't know how long this would take, but it seemed like it'd take way too long.</p>
+
+<p>Alternatively, I could try to use the tools I have at-hand to automatically solve this problem in a matter of minutes. Of course, that is what I did. Here's how. This should work in Bash or Zsh, by the way!</p>
+
+<ol>
+<li><p>I need to know what files I <em>should</em> have. I want them saved in a file called <code>mvi_list</code>.  </p>
+
+<ol><li>OneDrive knows that. I used <a href="https://www.google.com/chrome/">Google Chrome</a> to save the OneDrive page's contents (Options -&gt; Save Page As). It's useful to note that the mobile OneDrive page is less AJAX-y, and will probably give you a more reliable result. Use a <a href="https://chrome.google.com/webstore/detail/user-agent-switcher-for-c/djflhoibgkdhkhhcedjiklpkjnoahfmg?hl=en-US">User-Agent switcher</a> to load the mobile site in your desktop browser.</li>
+<li><p>We know that all the video names start with "MVI_". We can extract the video names from the HTML file using that string, plus some dirty hacks:</p>
+
+<pre><code>cat [htmlfile] | tr " " "\n" | grep "MVI_" | grep "alt" | sort | uniq | tr -d "alt=\"" &gt; mvi_list.
+</code></pre>
+
+<p>If you don't know what the vertical bars (pipes) are, read about them here <a href="http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-4.html">here</a>.</p>
+
+<ul><li><code>cat [htmlfile] |</code> reads the contents of your HTML file.</li>
+<li><code>tr " " "\n" |</code> replaces whitespace with a newline character.</li>
+<li><code>grep "MVI_" |</code> filters out any lines that have the filenames that we're interested in.</li>
+<li><code>grep "alt" |</code> filters out any lines that have the HTML <code>alt</code> attribute, as it so happens that these lines contain our filenames.</li>
+<li><code>sort |</code> sorts the lines alphabetically.</li>
+<li><code>uniq |</code> deduplicates the lines.</li>
+<li><code>tr -d "alt=\"" &gt; mvi_list</code> removes the characters contained in the quotes from each line, and save the final result in a file called <code>mvi_list</code>.</li></ul></li></ol></li>
+<li><p>I need the list of the video files that I <em>do</em> have. I want it saved in a file called <code>haves</code>. I have all the video files saved in a folder called <code>extracted</code>. They're named <code>MVI_[sequenceNumber].MOV</code>. The filenames in <code>mvi_list</code> do not have the .MOV extension. So, I'll use the following command to get a list of the files I have in the same format as <code>mvi_list</code>: </p>
+
+<pre><code>ls extracted | awk -F"." '{print $1}' &gt; haves
+</code></pre>
+
+<p>Here's the breakdown:</p>
+
+<ul><li><code>ls extracted |</code> gives me a simple list of all the files I have.</li>
+<li><code>awk -F"." '{print $1}' &gt; haves</code> splits up each line at the period, and prints the first (<code>$1</code>) chunk of the split, which is the filename in this case. This gets saved into a file called <code>haves</code>.</li></ul></li>
+<li><p>Now I can check to see what the difference between OneDrive and my local filesystem is, using <code>diff mvi_list haves</code>, which will compare the two files passed to it, displaying any differences. This produces the following output:</p>
+
+<pre><code>37,40d36
+&lt; MVI_6898
+&lt; MVI_6899
+&lt; MVI_6900
+&lt; MVI_6901
+</code></pre>
+
+<p>That means that <code>mvi_list</code> has 4 items that <code>haves</code> does not. Those are the videos I'm missing! I'm sure there are more elegant solutions, but as it is, this took all of 2 minutes; the missing movies are downloaded, and my problem is solved without any tedious manual comparisons.</p></li>
+</ol>
+
+<p>Google will usually provide answers for any questions you have about using Bash/Zsh to solve otherwise tedious problems (i.e. "How do I rename all the files in a folder?"). I'd also recommend checking out <a href="https://twitter.com/climagic">Command Line Magic</a> for further inspiration.</p></div>
+
+    <p class="meta">Posted on <span class="postdate">Nov 26th, 2014</span></p>
+
+</article>
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'spirotot'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    
+
+    </div>
+
+
+
+  </div>
+
+
+
+  <footer id="footer">
+    <p class="copyright">Copyright © 2014 @Spirotot | Aaron Fields. Powered by <a href="http://ghost.org">Ghost</a>, theme by <a href="http://www.webmaster-source.com">Matt Harzewski</a></p>
+  </footer>
+
+
+
+  <script src="../../../../public/jquery.js?v=25e0caf895"></script>
+
+  <script src="../../../../assets/js/jquery.mobilemenu.min.js?v=25e0caf895"></script>
+  <script src="../../../../assets/js/prism.js?v=25e0caf895"></script>
+  <script>
+    $(document).ready(function(){
+      $('#sidebar nav ul').mobileMenu({'topOptionText': 'Menu', 'prependTo': '#sidebar nav'});
+    });
+  </script>
+
+
+
+</body>
