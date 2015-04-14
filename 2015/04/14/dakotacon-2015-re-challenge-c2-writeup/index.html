@@ -1,0 +1,231 @@
+
+<head>
+
+  <meta charset="UTF-8">
+  <title>Dakotacon 2015 RE Challenge C2 Writeup</title>
+  <meta name="viewport" content="width=device-width">
+
+  <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../../../assets/css/style.css?v=e61979b466" rel="stylesheet">
+  <link href="../../../../assets/css/colors-dark.css?v=e61979b466" rel="stylesheet">
+
+  <link rel="canonical" href="http://blog.spirotot.com/2015/04/14/dakotacon-2015-re-challenge-c2-writeup/">
+    
+    <meta property="og:site_name" content="@Spirotot | Aaron Fields">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Dakotacon 2015 RE Challenge C2 Writeup">
+    <meta property="og:description" content="The Dakotacon C2 challenge was moderately difficult in that it actually required you to do a little programming work -- most of the other C-based challenges in this CTF allowed you to set a breakpoint at a smart place (e....">
+    <meta property="og:url" content="http://blog.spirotot.com/2015/04/14/dakotacon-2015-re-challenge-c2-writeup/">
+    <meta property="article:published_time" content="2015-04-14T19:12:48.615Z">
+    <meta property="article:modified_time" content="2015-04-14T19:24:54.365Z">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Dakotacon 2015 RE Challenge C2 Writeup">
+    <meta name="twitter:description" content="The Dakotacon C2 challenge was moderately difficult in that it actually required you to do a little programming work -- most of the other C-based challenges in this CTF allowed you to set a breakpoint at a smart place (e....">
+    <meta name="twitter:url" content="http://blog.spirotot.com/2015/04/14/dakotacon-2015-re-challenge-c2-writeup/">
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "@Spirotot | Aaron Fields",
+    "author": {
+        "@type": "Person",
+        "name": "Aaron Fields",
+        "url": "http://blog.spirotot.com/author/aaron",
+        "sameAs": null
+    },
+    "headline": "Dakotacon 2015 RE Challenge C2 Writeup",
+    "url": "http://blog.spirotot.com/2015/04/14/dakotacon-2015-re-challenge-c2-writeup/",
+    "datePublished": "2015-04-14T19:12:48.615Z",
+    "dateModified": "2015-04-14T19:24:54.365Z",
+    "description": "The Dakotacon C2 challenge was moderately difficult in that it actually required you to do a little programming work -- most of the other C-based challenges in this CTF allowed you to set a breakpoint at a smart place (e...."
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.5">
+    <link rel="alternate" type="application/rss+xml" title="@Spirotot | Aaron Fields" href="http://blog.spirotot.com/rss/">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-36144970-1', 'auto');
+  ga('require','displayfeatures');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+<body class="post-template">
+
+
+
+
+
+
+  <header id="header">
+      <h1><a href="http://blog.spirotot.com"> @Spirotot | Aaron Fields</a></h1>
+    <p></p>
+  </header>
+
+
+
+  <div id="page">
+
+
+
+    <div id="sidebar">
+
+      <nav>
+        <ul>
+          <li><a href="http://blog.spirotot.com">Home</a></li>
+          <li><a href="http://twitter.com/Spirotot">Twitter</a></li>
+          <li><a href="http://blog.spirotot.com/rss/">RSS Feed</a></li>
+        </ul>
+      </nav>
+
+        <div class="bio">
+          <img class="avatar" src="index.html">
+          <h3>Aaron Fields</h3>
+          <p></p>
+        </div>
+
+    </div>
+
+
+
+    <div id="content">
+      
+<article class="post">
+
+    <h1><a href="index.html">Dakotacon 2015 RE Challenge C2 Writeup</a></h1>
+
+    <div class="post-content"><p>The <a href="http://dakotacon.org/">Dakotacon</a> C2 challenge was moderately difficult in that it actually required you to do a little programming work -- most of the other C-based challenges in this CTF allowed you to set a breakpoint at a smart place (e.g. right before <code>strcmp()</code>), and view the key in-memory.</p>
+
+<p>Instead of comparing your input with the <em>actual</em> key, this binary encodes your input and compares it with an encoded version of the key.</p>
+
+<p>Here is the encoding algorithm, in <a href="https://www.hex-rays.com/products/ida/">IDA</a>-assembly, with my psuedocode added as comment on the right:</p>
+
+<pre><code>                                 // i = 0;
+.text:0123114D mov     ecx, 12   // r = 12;
+.text:01231152
+.text:01231152 loc_1231152:      // loop:                        ; CODE XREF: _main+DEj
+.text:01231152 mov     dx, [eax] //     tmp = input[i];
+.text:01231155 rol     dx, cl    //     tmp = tmp &lt;&lt; r;
+.text:01231158 mov     [eax], dx //     input[i] = tmp;
+.text:0123115B add     eax, 2     //     i += 2;
+.text:0123115E mov     dx, [eax] //     tmp = input[i];
+.text:01231161 rol     dx, cl    //     tmp = tmp &lt;&lt; r;
+.text:01231164 mov     [eax], dx //     input[i] = tmp;
+.text:01231167 add     eax, 2     //     i += 2
+.text:0123116A dec     ecx         //     r--;
+.text:0123116B cmp     ecx, 0    // while (r &lt; 0): loop
+.text:0123116E jge     short loc_1231152
+</code></pre>
+
+<p>So now we need to figure out the algorithmic inverse. It's not difficult -- all we need to do is change the direction of the rotates from <strong>left</strong> to <strong>right</strong>. Let's do it in psuedocode real quick:  </p>
+
+<pre><code>i = 0;  
+r = 12;
+
+loop:  
+  tmp = input[i];
+  tmp = tmp &gt;&gt; r; // Note the rotate to the right.
+  input[i] = tmp;
+  i += 2;
+
+  tmp = input[i];
+  tmp = tmp &gt;&gt; r; // Note the rotate to the right.
+  input[i] = tmp;
+  i += 2;
+
+  r--
+while (r &lt; 0): loop  
+</code></pre>
+
+<p>Let's turn that psuedocode into some actual C code:  </p>
+
+<pre><code>for (r = 12; r &gt; 0; r--)  
+{
+  memcpy(&amp;tmp, &amp;buf[i], 2);
+  printf("%x", tmp);
+
+  tmp = rotate_right(tmp, r);
+
+  memcpy(&amp;buf[i], &amp;tmp, 2);
+
+  i += 2;
+
+  memcpy(&amp;tmp, &amp;buf[i], 2);
+
+  printf("%x\n", tmp);
+
+  tmp = rotate_right(tmp, r);
+
+  memcpy(&amp;buf[i], &amp;tmp, 2);
+
+  i += 2;
+}
+</code></pre>
+
+<p>Now all we need is the buffer from the program, so we can run it through that decode loop. One way to get that buffer is simply to set a breakpoint on the <code>strncmp()</code> that does the comparison at address <code>0x01231178</code>. You should note that the first argument pushed onto the stack is a pointer to the encoded key. If you're following along in IDA, you should see something like this:</p>
+
+<p><img src="../../../../content/images/2015/04/C3_1.png" alt=""></p>
+
+<p>Note the highlighted bytes in the lower-left-hand panel. That's the encoded key, and what we want... those bytes were pushed onto the stack earlier in the program.</p>
+
+<p>If we copy/paste those into our program, and we can take a shot at decoding them!</p>
+
+<p><a href="https://github.com/Spirotot/write-ups-2015/blob/master/dakotacon-re-challenge-2015/C2/decoder.c">Here's the complete decoder I wrote to solve this challenge.</a></p></div>
+
+    <p class="meta">Posted on <span class="postdate">Apr 14th, 2015</span></p>
+
+</article>
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'spirotot'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    
+
+    </div>
+
+
+
+  </div>
+
+
+
+  <footer id="footer">
+    <p class="copyright">Copyright © 2015 @Spirotot | Aaron Fields. Powered by <a href="http://ghost.org">Ghost</a>, theme by <a href="http://www.webmaster-source.com">Matt Harzewski</a></p>
+  </footer>
+
+
+
+  <script src="../../../../public/jquery.js?v=e61979b466"></script>
+
+  <script src="../../../../assets/js/jquery.mobilemenu.min.js?v=e61979b466"></script>
+  <script src="../../../../assets/js/prism.js?v=e61979b466"></script>
+  <script>
+    $(document).ready(function(){
+      $('#sidebar nav ul').mobileMenu({'topOptionText': 'Menu', 'prependTo': '#sidebar nav'});
+    });
+  </script>
+
+
+
+</body>
