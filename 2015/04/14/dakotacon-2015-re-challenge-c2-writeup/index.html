@@ -20,7 +20,7 @@
     <meta property="og:description" content="The Dakotacon C2 challenge was moderately difficult in that it actually required you to do a little programming work -- most of the other C-based challenges in this CTF allowed you to set a breakpoint at a smart place (e....">
     <meta property="og:url" content="http://blog.spirotot.com/2015/04/14/dakotacon-2015-re-challenge-c2-writeup/">
     <meta property="article:published_time" content="2015-04-14T19:12:48.615Z">
-    <meta property="article:modified_time" content="2015-04-14T19:24:54.365Z">
+    <meta property="article:modified_time" content="2015-04-14T19:52:29.830Z">
     
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Dakotacon 2015 RE Challenge C2 Writeup">
@@ -41,7 +41,7 @@
     "headline": "Dakotacon 2015 RE Challenge C2 Writeup",
     "url": "http://blog.spirotot.com/2015/04/14/dakotacon-2015-re-challenge-c2-writeup/",
     "datePublished": "2015-04-14T19:12:48.615Z",
-    "dateModified": "2015-04-14T19:24:54.365Z",
+    "dateModified": "2015-04-14T19:52:29.830Z",
     "description": "The Dakotacon C2 challenge was moderately difficult in that it actually required you to do a little programming work -- most of the other C-based challenges in this CTF allowed you to set a breakpoint at a smart place (e...."
 }
     </script>
@@ -174,7 +174,7 @@ while (r &lt; 0): loop
 }
 </code></pre>
 
-<p>Now all we need is the buffer from the program, so we can run it through that decode loop. One way to get that buffer is simply to set a breakpoint on the <code>strncmp()</code> that does the comparison at address <code>0x01231178</code>. You should note that the first argument pushed onto the stack is a pointer to the encoded key. If you're following along in IDA, you should see something like this:</p>
+<p>Now all we need is the encoded key from the program, so we can run it through that decode loop. One way to get that encoded key is simply to set a breakpoint on the <code>strncmp()</code> at address <code>0x01231178</code>, which is the check for the correct key. The first argument pushed onto the stack is a pointer to the encoded key -- you can verify this by looking a few dozen instructions earlier, where you'll see the arguments being set up/pushed onto the stack. If you're following along in IDA, you should see something like this:</p>
 
 <p><img src="../../../../content/images/2015/04/C3_1.png" alt=""></p>
 
