@@ -1,0 +1,310 @@
+
+<head>
+
+  <meta charset="UTF-8">
+  <title>PoliCTF 2015 'Am I Cheating?' Reversing Writeup</title>
+  <meta name="viewport" content="width=device-width">
+
+  <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../../../assets/css/style.css?v=30f44a2fa9" rel="stylesheet">
+  <link href="../../../../assets/css/colors-dark.css?v=30f44a2fa9" rel="stylesheet">
+
+  <link rel="canonical" href="http://blog.spirotot.com/2015/07/13/polictf-2015-am-i-cheating-reversing-writeup/">
+    
+    <meta property="og:site_name" content="@Spirotot | Aaron Fields">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="PoliCTF 2015 'Am I Cheating?' Reversing Writeup">
+    <meta property="og:description" content="This challenge was available only via the torrent -- probably because of its large size (close to 4GB).  Let's go! Decompress and run Decompressing the challenge's .tar.gz gets you this: &amp;gt; $ file *                                             challdeb.img:     QEMU QCOW Image (v2), 6442450944...">
+    <meta property="og:url" content="http://blog.spirotot.com/2015/07/13/polictf-2015-am-i-cheating-reversing-writeup/">
+    <meta property="article:published_time" content="2015-07-13T07:39:16.668Z">
+    <meta property="article:modified_time" content="2015-07-15T13:36:51.996Z">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="PoliCTF 2015 'Am I Cheating?' Reversing Writeup">
+    <meta name="twitter:description" content="This challenge was available only via the torrent -- probably because of its large size (close to 4GB).  Let's go! Decompress and run Decompressing the challenge's .tar.gz gets you this: &amp;gt; $ file *                                             challdeb.img:     QEMU QCOW Image (v2), 6442450944...">
+    <meta name="twitter:url" content="http://blog.spirotot.com/2015/07/13/polictf-2015-am-i-cheating-reversing-writeup/">
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "@Spirotot | Aaron Fields",
+    "author": {
+        "@type": "Person",
+        "name": "Aaron Fields",
+        "url": "http://blog.spirotot.com/author/aaron",
+        "sameAs": null,
+        "description": null
+    },
+    "headline": "PoliCTF 2015 &#x27;Am I Cheating?&#x27; Reversing Writeup",
+    "url": "http://blog.spirotot.com/2015/07/13/polictf-2015-am-i-cheating-reversing-writeup/",
+    "datePublished": "2015-07-13T07:39:16.668Z",
+    "dateModified": "2015-07-15T13:36:51.996Z",
+    "description": "This challenge was available only via the torrent -- probably because of its large size (close to 4GB).  Let&#x27;s go! Decompress and run Decompressing the challenge&#x27;s .tar.gz gets you this: &amp;gt; $ file *                                             challdeb.img:     QEMU QCOW Image (v2), 6442450944..."
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.6">
+    <link rel="alternate" type="application/rss+xml" title="@Spirotot | Aaron Fields" href="http://blog.spirotot.com/rss/">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-36144970-1', 'auto');
+  ga('require','displayfeatures');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+<body class="post-template">
+
+
+
+
+
+
+  <header id="header">
+      <h1><a href="http://blog.spirotot.com"> @Spirotot | Aaron Fields</a></h1>
+    <p></p>
+  </header>
+
+
+
+  <div id="page">
+
+
+
+    <div id="sidebar">
+
+      <nav>
+        <ul>
+          <li><a href="http://blog.spirotot.com">Home</a></li>
+          <li><a href="http://twitter.com/Spirotot">Twitter</a></li>
+          <li><a href="http://blog.spirotot.com/rss/">RSS Feed</a></li>
+        </ul>
+      </nav>
+
+        <div class="bio">
+          <img class="avatar" src="index.html">
+          <h3>Aaron Fields</h3>
+          <p></p>
+        </div>
+
+    </div>
+
+
+
+    <div id="content">
+      
+<article class="post">
+
+    <h1><a href="index.html">PoliCTF 2015 'Am I Cheating?' Reversing Writeup</a></h1>
+
+    <div class="post-content"><p>This challenge was available only via the torrent -- probably because of its large size (close to 4GB). </p>
+
+<p>Let's go!</p>
+
+<h2 id="decompressandrun">Decompress and run</h2>
+
+<p>Decompressing the challenge's .tar.gz gets you this:</p>
+
+<pre><code class="language-bash">&gt; $ file *                                            
+challdeb.img:     QEMU QCOW Image (v2), 6442450944 bytes  
+qemu:             directory  
+run_and_solve_me: ELF 64-bit LSB  executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=e48460126ab69b5e66be84e58f22e5f81d187a3d, stripped  
+</code></pre>
+
+<p>We've got a QCOW2, a QEMU source folder (with already-built binaries), and an ELF that's begging to be run.</p>
+
+<p>Executing <code>run_and_solve_me</code> starts QEMU (and doesn't appear to do anything else, according to strace and some quick poking with IDA Pro)</p>
+
+<p><img src="../../../../content/images/2015/07/debian_vm-1.png" alt="debian_vm"></p>
+
+<p>As you can see, there are two files. Running <code>main</code> doesn't seem to produce anything useful.</p>
+
+<h2 id="pandaqemu">PANDA &amp; QEMU</h2>
+
+<p>The QEMU arguments are suspicious:</p>
+
+<pre><code class="language-bash">./qemu/i386-softmmu/qemu-system-i386 -m 1G -hda ./challdeb.img -panda challenge -loadvm challenge
+</code></pre>
+
+<p><code>-loadvm challenge</code> is loading a snapshot... But what's the <code>-panda challenge</code> argument about? I've heard of <a href="https://github.com/moyix/panda">PANDA</a> before, which is based off QEMU... but I've not yet used it. However, the <a href="https://github.com/moyix/panda/blob/master/docs/PANDA.md">PANDA documentation</a> seems to indicate that the <code>-panda</code> argument is used to load PANDA plugins.</p>
+
+<p>So, there must be a PANDA plugin called <code>challenge</code> that's getting loaded from somewhere.</p>
+
+<pre><code class="language-bash">&gt; $ find . -name "*challenge*"
+./qemu/i386-softmmu/panda_challenge.so
+./qemu/i386-softmmu/panda_plugins/challenge.o
+./qemu/i386-softmmu/panda_plugins/panda_challenge.so
+</code></pre>
+
+<p>Let's look at the <code>panda_challenge.so</code> from the <code>panda_plugins</code> directory, first -- that seems to be where all the other plugins are. Open it in IDA and look at the strings...</p>
+
+<p><img src="../../../../content/images/2015/07/challenge_so_strings.png" alt="challenge_so_strings"></p>
+
+<p>See the <code>./main</code> string? That looks interesting -- that's the command we type to run <code>main</code>! Let's look at where it's used in <code>panda_challenge.so</code> (double-click on the string, and then press <code>x</code> with the cursor on the string to show x-refs). It's a function called <code>exec_callback</code>.</p>
+
+<p><img src="../../../../content/images/2015/07/exec_callback_main.png" alt="exec_callback_main"></p>
+
+<p>Interesting... <a href="https://mice.cs.columbia.edu/getTechreport.php?techreportID=1588&amp;disposition=inline&amp;format=pdf">PANDA is a record-and-replay and/or malware analysis tool</a>. So if I had to guess, I'd guess that this PANDA plugin is watching for <code>main</code> to execute... and then doing... something? There's a call to <code>_panda_virtual_memory_rw</code>. Again, guessing... maybe it's marking memory in <code>main</code> as read/write? There are a bunch of <code>mov</code> instructions right below the <code>_panda_virtual_memory_rw</code> call. Turning them into characters (highlight with cursor and press <code>R</code>  makes them a little more sensible:</p>
+
+<p><img src="../../../../content/images/2015/07/panda_new_alphabet.png" alt="panda_new_alphabet"></p>
+
+<p>Hm, those "strings" look surprisingly similar to the <code>alphabet.txt</code> strings. Lowercase characters followed by uppercase characters. Many of them are even in the same order. It's probably time to drop <code>main</code> into IDA and have a look at what's going on. (I'm sure there are many ways to get <code>main</code> out of <code>challdeb.img</code>, but I chose to use <a href="http://www.rushiagr.com/blog/2014/08/02/qcow2-mount/"><code>qemu-nbd</code> to mount the image</a>. Once mounted, I simply copied <code>main</code> elsewhere.)</p>
+
+<h2 id="main">Main</h2>
+
+<p>It's not hard to find the <code>main</code> function in the <code>main</code> binary -- just take a look at the strings (there aren't many) and follow x-refs for the ones that showed up when we ran <code>main</code> earlier.</p>
+
+<p><img src="../../../../content/images/2015/07/main_main.png" alt="main_main"></p>
+
+<p>You can immediately see that staying on the 'left' path towards the string <code>OK! The flag should be: flag{%s}\n</code> is probably what we want to have this program do.</p>
+
+<p>To get there, the program must pass two checks. The first, in the topmost block, is simply checking to see if there is an argument in <code>argv[1]</code>. If it's null, the program takes the exit path. So, we are probably supposed to pass <code>main</code> something on the command line since that would make <code>argv[1]</code> non-null.</p>
+
+<p>Next, we need to pass the check that is <code>sub_80484FC</code>. But before this call we can see references to <code>alphabet.txt</code>, and some calls to <code>_getline</code>. It's probably safe to assume that the program is reading in the contents of <code>alphabet.txt</code>. Note the arguments to <code>getline</code>: The file descriptor <code>[esp+8]</code>, the length <code>[esp+4]</code> (0x1A == 26, which is the length of the alphabet...), and the destination <code>[esp]</code>, which is a double-pointer, according to the <a href="http://man7.org/linux/man-pages/man3/getline.3.html"><code>getline</code> documentation</a>. This information might be important later.</p>
+
+<p>Ok, let's take a look at <code>sub_80484FC</code>. In the above screenshot we can see that its only argument is <code>argv[1]</code>.</p>
+
+<p><img src="../../../../content/images/2015/07/sub_80484FC.png" alt="sub_80484FC"></p>
+
+<p>Again, the path we want to take is pretty clear -- we want to stay to the right, this time, which will bring us to <code>call sub_8048558</code> instead of just returning 0. That means we must pass a <code>strlen</code> check; our input must be 0x15 characters long... 21 characters, in decimal.</p>
+
+<p>Then, we must pass a number of <code>cmp</code>s. I'll cut to the chase: <code>sub_8048558</code> is full of more compares like this... and it calls another function (<code>sub_804860C</code>) with a lot more of the same. I'll walk you through these two... but I'll leave the exercise of running through the rest up to you.</p>
+
+<p>I've commented the assembly for the first <code>cmp</code> below:</p>
+
+<p><img src="../../../../content/images/2015/07/check_one.png" alt="check_one"></p>
+
+<p>Remember that <code>dword_8049BAC</code> was the destination location for the first <code>getline</code> call, so it contains a pointer to the lowercase alphabet. So what is <code>alph[0]</code> going to be? If the first line of our <code>alphabet.txt</code> is <code>olzqntjraghpbewidcfsuvymxk</code>, then <code>alph[0]</code> is the character <code>o</code>. Therefore, to pass the check, <code>s[1]</code> must be the character <code>o</code>.</p>
+
+<p>Now, we coul definitely go on doing this statically... but even for simple things, I'm always afraid that I'm going to mess something up and end up taking way more time. So, if I can dynamically analyze something, I usually do. Let's dynamically analyze the second <code>cmp</code>.</p>
+
+<p>So far, we know that our input should be 21 characters, and that the second character should be <code>o</code>. Here's the second check:</p>
+
+<p><img src="../../../../content/images/2015/07/check_two.png" alt="check_two"></p>
+
+<p>So what's <code>s[1]</code>? It's <code>o</code>. Therefore, <code>s[5]</code> (the 6th character in your input) should also be <code>o</code>.</p>
+
+<p>If you continue on through the rest of the checks in <code>sub_8048558</code> and <code>sub_804860C</code>, you will should deduce that your input to the program should be: <code>not_so_easy_try_again</code>.</p>
+
+<p>Running <code>./main not_so_easy_try_again</code> on my host system confirms this:</p>
+
+<pre><code class="language-bash">&gt; $ ./main not_so_easy_try_again
+OK! The flag should be: flag{not_so_easy_try_again}  
+</code></pre>
+
+<p>Of course I tried to submit that flag to the scoreboard... and it didn't work. Of course things aren't <em>that</em> easy.</p>
+
+<p>Our next step should be to run this same command inside the bundled Debian VM:</p>
+
+<p><img src="../../../../content/images/2015/07/vm_not_so_easy-1.png" alt="vm_not_so_easy"></p>
+
+<p>Remember the PANDA plugin we looked at earlier? At this point I suspected it must be meddling with the <code>alphabet.txt</code> strings at some point. I decided to try to use GDB to see if I could figure out what was going on.</p>
+
+<p><img src="../../../../content/images/2015/07/gdb_1.png" alt="gdb_1"></p>
+
+<p>I set a breakpoint for the first time <code>dword_8049BAC</code> is used -- I wanted to check the <code>alphabet.txt</code> string. It's the same as my host machine (<code>olzqntjraghpbewidcfsuvymxk</code>)! And letting the program run through with that input gives us the same output we got on our host machine! </p>
+
+<p>I wonder if PANDA is somehow able to determine (directly or through inference) whether or not the program is being debugged... Let's try a trick.</p>
+
+<p>We'll patch <code>main</code> to stop in an infinite loop at about the same spot that we set our breakpoint. <code>\xeb\xfe</code> is a very simple infinite loop that translates to <code>jmp .</code>. That is, jump to the current instruction. <em>Then</em> we'll attach to the program with a debugger and see if the <code>alphabet.txt</code> lines have changed.</p>
+
+<p><img src="../../../../content/images/2015/07/patch.png" alt="patch"></p>
+
+<p>Don't know how to patch binaries with IDA? <a href="https://thesprawl.org/projects/ida-patcher/">Check this out.</a></p>
+
+<p>The Debian VM has networking, so you can just <code>wget</code> the patched binary onto the machine (run <code>sudo python -m SimpleHTTPServer 80</code> on your host).</p>
+
+<p>Run <code>main</code>, then attach to it with <code>gdb</code>...</p>
+
+<p><img src="../../../../content/images/2015/07/gdb_2.png" alt="gdb_2"></p>
+
+<p>Look, the string is different!  </p>
+
+<pre><code>Now:    olzqmrjreghpbiwudcfsuvymxk  
+Before: olzqntjraghpbewidcfsuvymxk  
+</code></pre>
+
+<p>Let's write a Python script to solve this for us.</p>
+
+<pre><code class="language-python">orig = "not_so_easy_try_again"  
+a1 = "olzqntjraghpbewidcfsuvymxk"  
+a2 = "olzqmrjreghpbiwudcfsuvymxk"
+
+l = []  
+for char in orig:  
+    if char is "_":
+        l.append(char)
+
+    for c in range(0, len(a1)):
+        if char == a1[c]:
+            l.append(c)
+
+for i in l:  
+    if str(i) == "_":
+        print "_",
+    else:
+        print a2[i],
+
+print "\n"  
+</code></pre>
+
+<p>Running script print out <code>m o r _ s o _ i e s y _ r r y _ e g e u m</code>.</p>
+
+<p>And running the unpatched <code>main</code> in the VM without a debugger using the above as input solves the challnege. The flag is <strong><code>flag{mor_so_iesy_rry_egeum}</code></strong>. <br>
+<img src="../../../../content/images/2015/07/solved.png" alt="solved"></p></div>
+
+    <p class="meta">Posted on <span class="postdate">Jul 13th, 2015</span></p>
+
+</article>
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'spirotot'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    
+
+    </div>
+
+
+
+  </div>
+
+
+
+  <footer id="footer">
+    <p class="copyright">Copyright © 2015 @Spirotot | Aaron Fields. Powered by <a href="http://ghost.org">Ghost</a>, theme by <a href="http://www.webmaster-source.com">Matt Harzewski</a></p>
+  </footer>
+
+
+
+  <script src="../../../../public/jquery.js?v=30f44a2fa9"></script>
+
+  <script src="../../../../assets/js/jquery.mobilemenu.min.js?v=30f44a2fa9"></script>
+  <script src="../../../../assets/js/prism.js?v=30f44a2fa9"></script>
+  <script>
+    $(document).ready(function(){
+      $('#sidebar nav ul').mobileMenu({'topOptionText': 'Menu', 'prependTo': '#sidebar nav'});
+    });
+  </script>
+
+
+
+</body>
