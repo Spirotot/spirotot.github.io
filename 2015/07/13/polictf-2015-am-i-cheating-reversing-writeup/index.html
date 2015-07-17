@@ -20,7 +20,16 @@
     <meta property="og:description" content="This challenge was available only via the torrent -- probably because of its large size (close to 4GB).  Let's go! Decompress and run Decompressing the challenge's .tar.gz gets you this: &amp;gt; $ file *                                             challdeb.img:     QEMU QCOW Image (v2), 6442450944...">
     <meta property="og:url" content="http://blog.spirotot.com/2015/07/13/polictf-2015-am-i-cheating-reversing-writeup/">
     <meta property="article:published_time" content="2015-07-13T07:39:16.668Z">
-    <meta property="article:modified_time" content="2015-07-15T13:36:51.996Z">
+    <meta property="article:modified_time" content="2015-07-17T01:11:54.637Z">
+    <meta property="article:tag" content="linux">
+    <meta property="article:tag" content="ctf">
+    <meta property="article:tag" content="reverse engineering">
+    <meta property="article:tag" content="reversing">
+    <meta property="article:tag" content="ida">
+    <meta property="article:tag" content="ida pro">
+    <meta property="article:tag" content="polictf">
+    <meta property="article:tag" content="hacking">
+    <meta property="article:tag" content="qemu">
     
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="PoliCTF 2015 'Am I Cheating?' Reversing Writeup">
@@ -42,7 +51,8 @@
     "headline": "PoliCTF 2015 &#x27;Am I Cheating?&#x27; Reversing Writeup",
     "url": "http://blog.spirotot.com/2015/07/13/polictf-2015-am-i-cheating-reversing-writeup/",
     "datePublished": "2015-07-13T07:39:16.668Z",
-    "dateModified": "2015-07-15T13:36:51.996Z",
+    "dateModified": "2015-07-17T01:11:54.637Z",
+    "keywords": "linux, ctf, reverse engineering, reversing, ida, ida pro, polictf, hacking, qemu",
     "description": "This challenge was available only via the torrent -- probably because of its large size (close to 4GB).  Let&#x27;s go! Decompress and run Decompressing the challenge&#x27;s .tar.gz gets you this: &amp;gt; $ file *                                             challdeb.img:     QEMU QCOW Image (v2), 6442450944..."
 }
     </script>
@@ -63,7 +73,7 @@
 
 </head>
 
-<body class="post-template">
+<body class="post-template tag-linux tag-ctf tag-reverse-engineering tag-reversing tag-ida tag-ida-pro tag-polictf tag-hacking tag-qemu">
 
 
 
@@ -103,7 +113,7 @@
 
     <div id="content">
       
-<article class="post">
+<article class="post tag-linux tag-ctf tag-reverse-engineering tag-reversing tag-ida tag-ida-pro tag-polictf tag-hacking tag-qemu">
 
     <h1><a href="index.html">PoliCTF 2015 'Am I Cheating?' Reversing Writeup</a></h1>
 
@@ -111,7 +121,7 @@
 
 <p>Let's go!</p>
 
-<h2 id="decompressandrun">Decompress and run</h2>
+<h1 id="decompressandrun">Decompress and run</h1>
 
 <p>Decompressing the challenge's .tar.gz gets you this:</p>
 
@@ -129,7 +139,7 @@ run_and_solve_me: ELF 64-bit LSB  executable, x86-64, version 1 (SYSV), dynamica
 
 <p>As you can see, there are two files. Running <code>main</code> doesn't seem to produce anything useful.</p>
 
-<h2 id="pandaqemu">PANDA &amp; QEMU</h2>
+<h1 id="pandaqemu">PANDA &amp; QEMU</h1>
 
 <p>The QEMU arguments are suspicious:</p>
 
@@ -160,7 +170,7 @@ run_and_solve_me: ELF 64-bit LSB  executable, x86-64, version 1 (SYSV), dynamica
 
 <p>Hm, those "strings" look surprisingly similar to the <code>alphabet.txt</code> strings. Lowercase characters followed by uppercase characters. Many of them are even in the same order. It's probably time to drop <code>main</code> into IDA and have a look at what's going on. (I'm sure there are many ways to get <code>main</code> out of <code>challdeb.img</code>, but I chose to use <a href="http://www.rushiagr.com/blog/2014/08/02/qcow2-mount/"><code>qemu-nbd</code> to mount the image</a>. Once mounted, I simply copied <code>main</code> elsewhere.)</p>
 
-<h2 id="main">Main</h2>
+<h1 id="main">Main</h1>
 
 <p>It's not hard to find the <code>main</code> function in the <code>main</code> binary -- just take a look at the strings (there aren't many) and follow x-refs for the ones that showed up when we ran <code>main</code> earlier.</p>
 
@@ -186,8 +196,6 @@ run_and_solve_me: ELF 64-bit LSB  executable, x86-64, version 1 (SYSV), dynamica
 
 <p>Remember that <code>dword_8049BAC</code> was the destination location for the first <code>getline</code> call, so it contains a pointer to the lowercase alphabet. So what is <code>alph[0]</code> going to be? If the first line of our <code>alphabet.txt</code> is <code>olzqntjraghpbewidcfsuvymxk</code>, then <code>alph[0]</code> is the character <code>o</code>. Therefore, to pass the check, <code>s[1]</code> must be the character <code>o</code>.</p>
 
-<p>Now, we coul definitely go on doing this statically... but even for simple things, I'm always afraid that I'm going to mess something up and end up taking way more time. So, if I can dynamically analyze something, I usually do. Let's dynamically analyze the second <code>cmp</code>.</p>
-
 <p>So far, we know that our input should be 21 characters, and that the second character should be <code>o</code>. Here's the second check:</p>
 
 <p><img src="../../../../content/images/2015/07/check_two.png" alt="check_two"></p>
@@ -203,6 +211,8 @@ OK! The flag should be: flag{not_so_easy_try_again}
 </code></pre>
 
 <p>Of course I tried to submit that flag to the scoreboard... and it didn't work. Of course things aren't <em>that</em> easy.</p>
+
+<h1 id="finalsteps">Final Steps</h1>
 
 <p>Our next step should be to run this same command inside the bundled Debian VM:</p>
 
@@ -260,7 +270,9 @@ print "\n"
 
 <p>Running script print out <code>m o r _ s o _ i e s y _ r r y _ e g e u m</code>.</p>
 
-<p>And running the unpatched <code>main</code> in the VM without a debugger using the above as input solves the challnege. The flag is <strong><code>flag{mor_so_iesy_rry_egeum}</code></strong>. <br>
+<h1 id="solved">Solved</h1>
+
+<p>And running the unpatched <code>main</code> in the VM without a debugger using the above as input solves the challenge. The flag is <strong><code>flag{mor_so_iesy_rry_egeum}</code></strong>. <br>
 <img src="../../../../content/images/2015/07/solved.png" alt="solved"></p></div>
 
     <p class="meta">Posted on <span class="postdate">Jul 13th, 2015</span></p>
